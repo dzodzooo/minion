@@ -55,9 +55,9 @@ void CGLRenderer::PrepareScene(CDC* pDC) {
 	glClearColor(0.2, 0.3, 0.2, 0);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
-
+	glEnable(GL_NORMALIZE);
 	
-	GLfloat light1_ambient[] = { 0.2, 0.2, 0.2, 1.0 };
+	GLfloat light1_ambient[] = { 0.4, 0.4, 0.4, 1.0 };
 	GLfloat light1_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat light1_specular[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat light1_position[] = { 0.0, 0.0, -5.0, 0 };
@@ -173,15 +173,16 @@ void CGLRenderer::DrawEyes() {
 	glTranslatef(-1, 0, 0);
 }
 void CGLRenderer::DrawEye(float r) {
-	gray->Select();
-	DrawCircle(r, 30, -0.01);
+	
 	glRotatef(90, 1, 0, 0);
 	gray->Select(GL_FRONT_AND_BACK);
 	DrawCylinder(r, r, 0.7, 30, 1);
 	glRotatef(-90, 1, 0, 0);
 
-
-	white->Select();
+	glTranslatef(0,0,-0.34);
+	gray->Select(GL_FRONT_AND_BACK);
+	DrawCircle(r, 30, -0.01);
+	white->Select();	
 	DrawCircle(0.8 * r, 30, -0.02);
 
 	double deltaX = 0, deltaY = 0;
@@ -215,6 +216,7 @@ void CGLRenderer::DrawEye(float r) {
 	DrawCircle(r * 0.1, 30, -0.05);
 	glTranslatef(0.15 * r, -0.2 * r, 0);
 	glTranslatef(-deltaX, -deltaY, 0);
+	glTranslatef(0, 0, 0.34);
 }
 void CGLRenderer::DrawCircle(float r, UINT nSeg, float z) {
 	glBegin(GL_TRIANGLE_FAN);
@@ -237,9 +239,9 @@ void CGLRenderer::DrawCylinder(float r1, float r2, float h, int nseg, float perc
 	UINT num = nseg * max(min(1, percentage), 0);
 	glBegin(GL_QUAD_STRIP);
 	for (int i = 0; i <num; i++) {
-		glNormal3f(r1 * cos(angle), -h / 2, r1 * sin(angle));
+		glNormal3f(r1 * cos(angle), 0, r1 * sin(angle));
 		glVertex3f(r1*cos(angle), -h/2, r1*sin(angle));
-		glNormal3f(r2 * cos(angle), h / 2, r2 * sin(angle));
+		glNormal3f(r2 * cos(angle), 0, r2 * sin(angle));
 		glVertex3f(r2*cos(angle),h/2, r2*sin(angle));
 		angle += angleSeg;
 	}
@@ -284,9 +286,9 @@ void CGLRenderer::DrawLeg(int side) {
 	glPushMatrix();
 	glTranslatef(0, -5.5, 0);
 	skin->Select();
-	DrawCylinder(0.3, 0.6, 0.7, 30,1);
-	glColor3f(0, 0, 0);
-	glTranslatef(0, -0.5, -0.5);
+	DrawCylinder(0.3, 0.6,0.8, 30,1);
+	
+	glTranslatef(0, -0.8, -0.5);
 	DrawShoe(side);
 	glPopMatrix();
 	
