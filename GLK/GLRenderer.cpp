@@ -12,6 +12,11 @@ CGLRenderer::CGLRenderer(void)
 {
 	world_angle_x = 0;
 	world_angle_y = 0;
+	skin = new Material();
+	white = new Material();
+	black = new Material();
+	eye_clr = new Material();
+	gray = new Material();
 }
 
 CGLRenderer::~CGLRenderer(void)
@@ -49,7 +54,33 @@ void CGLRenderer::PrepareScene(CDC* pDC) {
 
 	glClearColor(0.2, 0.3, 0.2, 0);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LIGHTING);
 
+	
+	GLfloat light1_ambient[] = { 0.2, 0.2, 0.2, 1.0 };
+	GLfloat light1_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat light1_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat light1_position[] = { 0.0, 0.0, -5.0, 0 };
+	glLightfv(GL_LIGHT1, GL_AMBIENT, light1_ambient);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, light1_diffuse);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, light1_specular);
+	glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
+	glEnable(GL_LIGHT1);
+
+	skin->PrepareMaterial();
+	skin->SetDiffuse(1, 216 / 255.0, 0);
+
+	black->PrepareMaterial();
+	black->SetDiffuse(0, 0, 0);
+
+	white->PrepareMaterial();
+	white->SetDiffuse(1, 1, 1);
+
+	eye_clr->PrepareMaterial();
+	eye_clr->SetDiffuse(127 / 255.0, 51 / 255.0, 0);
+
+	gray->PrepareMaterial();
+	gray->SetDiffuse(128 / 255.0, 128 / 255.0, 128 / 255.0);
 	wglMakeCurrent(NULL, NULL);
 }
 
@@ -104,28 +135,31 @@ void CGLRenderer::DrawScene(CDC* pDC) {
 }
 
 void CGLRenderer::DrawMinion() {
+	
 	DrawBody();
 	DrawFace();
 	DrawLegs();
 	DrawHands();
 }
 void CGLRenderer::DrawFace() {
-	glColor3f(0,0,0);
+	black->Select();
 	DrawCylinder(2.51, 2.51, 2.0/3, 30,1);
 	glTranslatef(0, 0, -2.5);
 	DrawEyes();
 	glTranslatef(0, 0, 2.5);
 }
 void CGLRenderer::DrawBody() {
-	glColor3f(1, 216 / 255.0, 0);
+	skin->Select();
 	glTranslatef(0, -1.5, 0);
 	DrawCylinder(2.5, 2.5, 4.5, 30,1);
 	glTranslatef(0, 2.25, 0);
+	skin->Select();
 	DrawSpherePart(2, 2.5, 30, 0.5);
 	glTranslatef(0, -2.25, 0);
 
 	glRotatef(180, 1, 0, 0);
 	glTranslatef(0, 2.25, 0);
+	skin->Select();
 	DrawSpherePart(1.5, 2.5, 30, 0.5);
 	glTranslatef(0, -2.25, 0);
 	glRotatef(-180, 1, 0, 0);
@@ -139,14 +173,15 @@ void CGLRenderer::DrawEyes() {
 	glTranslatef(-1, 0, 0);
 }
 void CGLRenderer::DrawEye(float r) {
-	glColor3f(128 / 255.0, 128 / 255.0, 128 / 255.0);
+	gray->Select();
 	DrawCircle(r, 30, -0.01);
 	glRotatef(90, 1, 0, 0);
+	gray->Select(GL_FRONT_AND_BACK);
 	DrawCylinder(r, r, 0.7, 30, 1);
 	glRotatef(-90, 1, 0, 0);
 
 
-	glColor3f(1, 1, 1);
+	white->Select();
 	DrawCircle(0.8 * r, 30, -0.02);
 
 	double deltaX = 0, deltaY = 0;
@@ -169,12 +204,14 @@ void CGLRenderer::DrawEye(float r) {
 	glTranslatef(deltaX,deltaY, 0);
 
 
-	glColor3f(127/255.0, 51/255.0, 0);
+	eye_clr->Select();
 	DrawCircle(r *0.3, 30, -0.03);
-	glColor3f(0, 0, 0);
+	black->Select();
 	DrawCircle(r *0.1, 30, -0.04);
 	glTranslatef(-0.15 * r, 0.2 * r, 0);
-	glColor3f(1, 1, 1);
+	white->SetShininess(1);
+	white->Select();
+
 	DrawCircle(r * 0.1, 30, -0.05);
 	glTranslatef(0.15 * r, -0.2 * r, 0);
 	glTranslatef(-deltaX, -deltaY, 0);
@@ -183,9 +220,11 @@ void CGLRenderer::DrawCircle(float r, UINT nSeg, float z) {
 	glBegin(GL_TRIANGLE_FAN);
 	float angleSeg = 2 * PI / nSeg;
 	float angle = 0;
+	glNormal3f(0, 0, z > 0 ? 1 : -1);
 	glVertex3f(0, 0, z);
 	nSeg++;
 	for (UINT i = 0; i < nSeg; i++) {
+		glNormal3f(0,0,z>0?1:-1);
 		glVertex3f(r * cos(angle), r * sin(angle), z);
 		angle += angleSeg;
 	}
@@ -198,7 +237,9 @@ void CGLRenderer::DrawCylinder(float r1, float r2, float h, int nseg, float perc
 	UINT num = nseg * max(min(1, percentage), 0);
 	glBegin(GL_QUAD_STRIP);
 	for (int i = 0; i <num; i++) {
+		glNormal3f(r1 * cos(angle), -h / 2, r1 * sin(angle));
 		glVertex3f(r1*cos(angle), -h/2, r1*sin(angle));
+		glNormal3f(r2 * cos(angle), h / 2, r2 * sin(angle));
 		glVertex3f(r2*cos(angle),h/2, r2*sin(angle));
 		angle += angleSeg;
 	}
@@ -220,7 +261,9 @@ void CGLRenderer::DrawSpherePart(float r1, float r2, UINT nSeg, float percentage
 			float x2=cos(alfa+step)*cos(beta);
 			float y2=sin(alfa+step);
 			float z2=cos(alfa+step)*sin(beta);
+			glNormal3f(r2 * x1, r1 * y1, r2 * z1);
 			glVertex3f(r2*x1, r1*y1, r2*z1);
+			glNormal3f(r2 * x2, r1 * y2, r2 * z2);
 			glVertex3f(r2*x2, r1*y2, r2*z2);
 			beta += step;
 		}
@@ -232,7 +275,6 @@ void CGLRenderer::DrawHands(){}
 void CGLRenderer::DrawLegs(){
 	glTranslatef(-0.6,0, 0);
 	DrawLeg(LEFT_LEG);
-	//DrawShoe();
 	glTranslatef(1.2, 0, 0);
 	DrawLeg(RIGHT_LEG);
 	glTranslatef(-1, 0, 0);
@@ -241,7 +283,7 @@ void CGLRenderer::DrawLeg(int side) {
 	
 	glPushMatrix();
 	glTranslatef(0, -5.5, 0);
-	glColor3f(63.0/255, 100.0/255, 127.0/255);
+	skin->Select();
 	DrawCylinder(0.3, 0.6, 0.7, 30,1);
 	glColor3f(0, 0, 0);
 	glTranslatef(0, -0.5, -0.5);
@@ -257,11 +299,14 @@ void CGLRenderer::DrawShoe(int side) {
 	glRotatef(270, 1, 0, 0);
 	glRotatef(30*side, 0, 0, 1);
 	glTranslatef(-side*0.2, 0, 0);
+	black->Select();
 	DrawCylinder(0.4, 0.4, 1, 30, 0.5);
 	glRotatef(90, 1, 0, 0);
 	glTranslatef(0, 0, -0.4);
+	black->Select();
 	DrawSpherePart(0.4, 0.4, 30, 0.5);
 	glTranslatef(0, 0, 0.8);
+	black->Select();
 	DrawSpherePart(0.4, 0.4, 30, 0.5);
 	glPopMatrix();
 }

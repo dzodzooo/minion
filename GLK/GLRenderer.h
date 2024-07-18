@@ -1,9 +1,10 @@
 #pragma once
-
+#include "Material.h"
 class CGLRenderer
 {
 	enum LEGS { LEFT_LEG = 1, RIGHT_LEG = -1 };
 	float world_angle_x, world_angle_y;
+	Material *skin, *white, *black, *eye_clr,*gray;
 	
 public:
 	static LEGS legs;

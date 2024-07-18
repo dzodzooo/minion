@@ -103,6 +103,7 @@
     <ClInclude Include="GLKDoc.h" />
     <ClInclude Include="GLKView.h" />
     <ClInclude Include="GLRenderer.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="StdAfx.h" />
@@ -113,6 +114,7 @@
     <ClCompile Include="GLKDoc.cpp" />
     <ClCompile Include="GLKView.cpp" />
     <ClCompile Include="GLRenderer.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="StdAfx.cpp" />
   </ItemGroup>
