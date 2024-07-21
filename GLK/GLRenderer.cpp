@@ -12,6 +12,7 @@ CGLRenderer::CGLRenderer(void)
 {
 	world_angle_x = 0;
 	world_angle_y = 0;
+	implants_size = 0;
 	skin = new Material();
 	white = new Material();
 	black = new Material();
@@ -277,7 +278,6 @@ void CGLRenderer::DrawCylinderTexture(float r1, float r2, float h, int nseg, flo
 	}
 	glEnd();
 }
-
 void CGLRenderer::DrawSpherePart(float r1, float r2, UINT nSeg, float percentage) {
 	glBegin(GL_QUAD_STRIP);
 	float step = 2 * PI / nSeg;
@@ -312,7 +312,6 @@ void CGLRenderer::DrawHands(){
 	DrawHand(RIGHT_SIDE);
 	glPopMatrix();
 }
-
 void CGLRenderer::DrawHand(SIDES side) {
 	glPushMatrix();
 	skin->Select();
@@ -354,7 +353,6 @@ void CGLRenderer::DrawLeg(SIDES side) {
 	DrawShoe(side);
 	glPopMatrix();
 }
-
 void CGLRenderer::DrawShoe(SIDES side) {
 	glPushMatrix();
 	glRotatef(-90, 1, 0, 0);
@@ -372,5 +370,16 @@ void CGLRenderer::DrawShoe(SIDES side) {
 
 	black->Select();
 	DrawSpherePart(0.4, 0.4, 30, 0.55);
+	glPopMatrix();
+}
+
+void CGLRenderer::DrawBoobs() {
+	float r = implants_size;
+	blue->Select();
+	glPushMatrix();
+	glTranslatef(-0.75, -2.5, -2.5);
+	DrawSpherePart(r, r, 30, 1);
+	glTranslatef(1.5, 0, 0);
+	DrawSpherePart(r, r, 30, 1);
 	glPopMatrix();
 }

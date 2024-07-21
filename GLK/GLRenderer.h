@@ -4,7 +4,7 @@
 class CGLRenderer
 {
 	enum SIDES { LEFT_SIDE = 1, RIGHT_SIDE = -1 };
-	float world_angle_x, world_angle_y;
+	float world_angle_x, world_angle_y, implants_size;
 	Material *skin, *white, *black, *eye_clr,*gray, *blue;
 	Texture* texture;
 	
@@ -36,6 +36,12 @@ public:
 	void DrawCylinderTexture(float r1, float r2, float h, int nseg, float percentage);
 	void DrawSpherePart(float r1, float r2, UINT nSeg, float percentage);
 	void DrawBoobs();
+	void BiggerImplants() {
+		implants_size+=0.2;
+	}
+	void SmallerImplants() {
+		implants_size -= 0.2;
+	}
 	void DestroyScene(CDC* pDC);			// dealocira resurse alocirane u drugim funkcijama ove klase,
 
 protected:

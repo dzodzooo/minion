@@ -33,6 +33,7 @@ BEGIN_MESSAGE_MAP(CGLKView, CView)
 	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
+	ON_WM_KEYDOWN()
 END_MESSAGE_MAP()
 
 // CGLKView construction/destruction
@@ -194,4 +195,22 @@ void CGLKView::OnLButtonUp(UINT nFlags, CPoint point)
 		mouse_clicked = false;
 	}
 	CView::OnLButtonUp(nFlags, point);
+}
+
+
+void CGLKView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	// TODO: Add your message handler code here and/or call default
+	switch (nChar) {
+	case 107: {
+		m_glRenderer.BiggerImplants();
+		Invalidate();
+	} break;
+	case 109: {
+		m_glRenderer.SmallerImplants();
+		Invalidate();
+	} break;
+	default:break;
+	}
+	CView::OnKeyDown(nChar, nRepCnt, nFlags);
 }
