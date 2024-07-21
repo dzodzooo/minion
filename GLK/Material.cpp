@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "Material.h"
-#include <gl/GL.h>
+#include "GL\gl.h"
+#include "GL\glu.h"
+#include "GL\glaux.h"
+#include "GL\glut.h"
+
 
 
 Material::Material() {
@@ -25,7 +29,11 @@ void Material::PrepareMaterial() {
 	SetShininess();
 }
 
-void Material::Select(GLenum par) {
+void Material::Select(GLenum par, bool not_texture) {
+	/*if (not_texture)
+	{
+		
+	}*/
 	glMaterialfv(par, GL_AMBIENT, _ambient);
 	glMaterialfv(par, GL_DIFFUSE, _diffuse);
 	glMaterialfv(par, GL_SPECULAR, _specular);

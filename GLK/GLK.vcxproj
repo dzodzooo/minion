@@ -99,6 +99,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DImage.h" />
     <ClInclude Include="GLK.h" />
     <ClInclude Include="GLKDoc.h" />
     <ClInclude Include="GLKView.h" />
@@ -108,15 +109,20 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DImage.cpp" />
     <ClCompile Include="GLK.cpp" />
     <ClCompile Include="GLKDoc.cpp" />
     <ClCompile Include="GLKView.cpp" />
     <ClCompile Include="GLRenderer.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="MainFrm.cpp" />
-    <ClCompile Include="StdAfx.cpp" />
+    <ClCompile Include="StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GLK.rc" />
@@ -127,6 +133,7 @@
   <ItemGroup>
     <Image Include="res\GLK.ico" />
     <Image Include="res\GLKDoc.ico" />
+    <Image Include="res\minion_tex.bmp" />
     <Image Include="res\Toolbar.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

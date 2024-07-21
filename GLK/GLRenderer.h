@@ -1,13 +1,15 @@
 #pragma once
 #include "Material.h"
+#include "Texture.h"
 class CGLRenderer
 {
-	enum LEGS { LEFT_LEG = 1, RIGHT_LEG = -1 };
+	enum SIDES { LEFT_SIDE = 1, RIGHT_SIDE = -1 };
 	float world_angle_x, world_angle_y;
-	Material *skin, *white, *black, *eye_clr,*gray;
+	Material *skin, *white, *black, *eye_clr,*gray, *blue;
+	Texture* texture;
 	
 public:
-	static LEGS legs;
+	static SIDES legs;
 	CGLRenderer(void);
 	virtual ~CGLRenderer(void);
 		
@@ -23,15 +25,17 @@ public:
 	void DrawBody();
 	void DrawHands();
 	void DrawLegs();
-	void DrawHand();
-	void DrawLeg(int side);
-	void DrawShoe(int side);
+	void DrawHand(SIDES side);
+	void DrawLeg(SIDES side);
+	void DrawShoe(SIDES side);
 	void DrawFace();
 	void DrawEyes();
 	void DrawEye(float r);
 	void DrawCircle(float r, UINT nSeg, float z);
 	void DrawCylinder(float r1, float r2, float h, int nseg, float percentage);
+	void DrawCylinderTexture(float r1, float r2, float h, int nseg, float percentage);
 	void DrawSpherePart(float r1, float r2, UINT nSeg, float percentage);
+	void DrawBoobs();
 	void DestroyScene(CDC* pDC);			// dealocira resurse alocirane u drugim funkcijama ove klase,
 
 protected:
