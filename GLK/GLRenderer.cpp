@@ -63,7 +63,7 @@ void CGLRenderer::PrepareScene(CDC* pDC) {
 	GLfloat light1_ambient[] = { 0.4, 0.4, 0.4, 1.0 };
 	GLfloat light1_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat light1_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat light1_position[] = { 0.0, 5.0, 0.0, 1 };
+	GLfloat light1_position[] = { 0.0, 0, -10.0, 0 };
 	glLightfv(GL_LIGHT1, GL_AMBIENT, light1_ambient);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, light1_diffuse);
 	glLightfv(GL_LIGHT1, GL_SPECULAR, light1_specular);
@@ -72,21 +72,26 @@ void CGLRenderer::PrepareScene(CDC* pDC) {
 
 	skin->PrepareMaterial();
 	skin->SetDiffuse(1, 216 / 255.0, 0);
+	skin->SetAmbient(1*0.2, 216 / 255.0*0.2, 0);
 
 	black->PrepareMaterial();
 	black->SetDiffuse(0, 0, 0);
+	black->SetAmbient(0, 0, 0);
 
 	white->PrepareMaterial();
 	white->SetDiffuse(1, 1, 1);
 
 	eye_clr->PrepareMaterial();
 	eye_clr->SetDiffuse(127 / 255.0, 51 / 255.0, 0);
+	eye_clr->SetAmbient(0.2*127 / 255.0, 0.2*51 / 255.0, 0);
 
 	gray->PrepareMaterial();
 	gray->SetDiffuse(128 / 255.0, 128 / 255.0, 128 / 255.0);
+	gray->SetAmbient(0.2*128 / 255.0, 0.2*128 / 255.0, 0.2*128 / 255.0);
 
 	blue->PrepareMaterial();
 	blue->SetDiffuse(63.0/255,100.0/255,127.0/255);
+	blue->SetAmbient(0.2*63.0/255,0.2*100.0/255,0.2*127.0/255);
 
 	texture->Prepare();
 	wglMakeCurrent(NULL, NULL);
@@ -147,7 +152,9 @@ void CGLRenderer::DrawMinion() {
 	DrawFace();
 	DrawLegs();
 	DrawHands();
-	DrawBoobs();
+	if (implants_size > 0) {
+		DrawBoobs();
+	}
 }
 void CGLRenderer::DrawFace() {
 	black->Select();
@@ -259,9 +266,9 @@ void CGLRenderer::DrawCylinder(float r1, float r2, float h, int nseg, float perc
 	UINT num = nseg * max(min(1, percentage), 0);
 	glBegin(GL_QUAD_STRIP);
 	for (int i = 0; i <num; i++) {
-		glNormal3f(cos(angle), -h/2, sin(angle));
+		glNormal3f(cos(angle), 0, sin(angle));
 		glVertex3f(r1*cos(angle), -h/2, r1*sin(angle));
-		glNormal3f(cos(angle), -h/2, sin(angle));
+		glNormal3f(cos(angle), 0, sin(angle));
 		glVertex3f(r2*cos(angle),h/2, r2*sin(angle));
 		angle += angleSeg;
 	}
@@ -289,15 +296,18 @@ void CGLRenderer::DrawCylinderTexture(float r1, float r2, float h, int nseg, flo
 	float delta = 1.0 / nseg;
 	for (int i = 0; i < num; i++) {
 		glTexCoord2f(br,1);
-		glNormal3f(r1 * cos(angle), 0, r1 * sin(angle));
+		glNormal3f(cos(angle), 0, sin(angle));
 		glVertex3f(r1 * cos(angle), -h / 2, r1 * sin(angle));
+
 		glTexCoord2f(br, 0);
-		glNormal3f(r2 * cos(angle), 0, r2 * sin(angle));
+		glNormal3f(r1/r2*cos(angle), 0, r1/r2*sin(angle));
 		glVertex3f(r2 * cos(angle), h / 2, r2 * sin(angle));
+
 		angle += angleSeg;
 		br += delta;
 	}
 	glEnd();
+
 }
 void CGLRenderer::DrawSpherePart(float r1, float r2, UINT nSeg, float percentage) {
 	glBegin(GL_QUAD_STRIP);
@@ -311,13 +321,13 @@ void CGLRenderer::DrawSpherePart(float r1, float r2, UINT nSeg, float percentage
 			float x1=cos(alfa)*cos(beta);
 			float y1=sin(alfa);
 			float z1=cos(alfa)*sin(beta);
-			glNormal3f(x1, y1, z1);
+			glNormal3f(x1, r1/r2*y1, z1);
 			glVertex3f(r2 * x1, r1 * y1, r2 * z1);
 
 			float x2=cos(alfa+step)*cos(beta);
 			float y2=sin(alfa+step);
 			float z2=cos(alfa+step)*sin(beta);
-			glNormal3f(x2, y2, z2);
+			glNormal3f(x2, r1/r2*y2, z2);
 			glVertex3f(r2*x2, r1*y2, r2*z2);
 			beta += step;
 		}
@@ -420,8 +430,8 @@ void CGLRenderer::DrawBoobs() {
 	blue->Select();
 	glPushMatrix();
 	glTranslatef(-0.75, -2.5, -2.5);
-	DrawSpherePart(r, r, (r+1)*15, 1);
+	DrawSpherePart(r, r, (r+2)*10, 1);
 	glTranslatef(1.5, 0, 0);
-	DrawSpherePart(r, r, (r+1)*15, 1);
+	DrawSpherePart(r, r, (r+2)*10, 1);
 	glPopMatrix();
 }
