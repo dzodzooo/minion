@@ -63,7 +63,7 @@ void CGLRenderer::PrepareScene(CDC* pDC) {
 	GLfloat light1_ambient[] = { 0.4, 0.4, 0.4, 1.0 };
 	GLfloat light1_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat light1_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat light1_position[] = { 0.0, 0.0, -5.0, 0 };
+	GLfloat light1_position[] = { 0.0, 5.0, 0.0, 1 };
 	glLightfv(GL_LIGHT1, GL_AMBIENT, light1_ambient);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, light1_diffuse);
 	glLightfv(GL_LIGHT1, GL_SPECULAR, light1_specular);
@@ -325,7 +325,7 @@ void CGLRenderer::DrawSpherePart(float r1, float r2, UINT nSeg, float percentage
 	}
 	glEnd();
 
-	alfa = 0; beta = 0;
+	/*alfa = 0; beta = 0;
 	glBegin(GL_LINES);
 	for (UINT i = 0; i < len; i++) {
 		for (UINT j = 0; j < nSeg; j++) {
@@ -344,7 +344,7 @@ void CGLRenderer::DrawSpherePart(float r1, float r2, UINT nSeg, float percentage
 		}
 		alfa += step;
 	}
-	glEnd();
+	glEnd();*/
 }
 void CGLRenderer::DrawHands(){
 	glPushMatrix();
@@ -420,8 +420,8 @@ void CGLRenderer::DrawBoobs() {
 	blue->Select();
 	glPushMatrix();
 	glTranslatef(-0.75, -2.5, -2.5);
-	DrawSpherePart(r, r, 15, 1);
+	DrawSpherePart(r, r, (r+1)*15, 1);
 	glTranslatef(1.5, 0, 0);
-	DrawSpherePart(r, r, 15, 1);
+	DrawSpherePart(r, r, (r+1)*15, 1);
 	glPopMatrix();
 }
