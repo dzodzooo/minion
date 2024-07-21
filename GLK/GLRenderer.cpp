@@ -237,11 +237,20 @@ void CGLRenderer::DrawCircle(float r, UINT nSeg, float z) {
 	glVertex3f(0, 0, z);
 	nSeg++;
 	for (UINT i = 0; i < nSeg; i++) {
-		glNormal3f(0,0,z>0?1:-1);
+		glNormal3f(r*cos(angle), r*sin(angle), z > 0 ? 1 : -1);
 		glVertex3f(r * cos(angle), r * sin(angle), z);
 		angle += angleSeg;
 	}
 	glEnd();
+
+	/*glBegin(GL_LINES);
+	angle = 0;
+	for (UINT i = 0; i < nSeg; i++) {
+		glVertex3f(r*cos(angle), r*sin(angle), 0);
+		glVertex3f(r*cos(angle), r*sin(angle), z > 0 ? 1 : -1);
+		angle += angleSeg;
+	}
+	glEnd();*/
 }	
 void CGLRenderer::DrawCylinder(float r1, float r2, float h, int nseg, float percentage) {
 	float angleSeg = 2 * PI / nseg;
@@ -250,13 +259,25 @@ void CGLRenderer::DrawCylinder(float r1, float r2, float h, int nseg, float perc
 	UINT num = nseg * max(min(1, percentage), 0);
 	glBegin(GL_QUAD_STRIP);
 	for (int i = 0; i <num; i++) {
-		glNormal3f(r1 * cos(angle), 0, r1 * sin(angle));
+		glNormal3f(cos(angle), -h/2, sin(angle));
 		glVertex3f(r1*cos(angle), -h/2, r1*sin(angle));
-		glNormal3f(r2 * cos(angle), 0, r2 * sin(angle));
+		glNormal3f(cos(angle), -h/2, sin(angle));
 		glVertex3f(r2*cos(angle),h/2, r2*sin(angle));
 		angle += angleSeg;
 	}
 	glEnd();
+
+	/*glBegin(GL_LINES);
+	angle = 0;
+	for (int i = 0; i < num; i++) {
+		glVertex3f(0, -h/2, 0);
+		glVertex3f(cos(angle), -h / 2,sin(angle));
+
+		glVertex3f(0, h/2, 0);
+		glVertex3f(cos(angle), h / 2,sin(angle));
+		angle += angleSeg;
+	}
+	glEnd();*/
 }
 void CGLRenderer::DrawCylinderTexture(float r1, float r2, float h, int nseg, float percentage) {
 	float angleSeg = 2 * PI / nseg;
@@ -290,14 +311,35 @@ void CGLRenderer::DrawSpherePart(float r1, float r2, UINT nSeg, float percentage
 			float x1=cos(alfa)*cos(beta);
 			float y1=sin(alfa);
 			float z1=cos(alfa)*sin(beta);
-			
+			glNormal3f(x1, y1, z1);
+			glVertex3f(r2 * x1, r1 * y1, r2 * z1);
+
 			float x2=cos(alfa+step)*cos(beta);
 			float y2=sin(alfa+step);
 			float z2=cos(alfa+step)*sin(beta);
-			glNormal3f(r2 * x1, r1 * y1, r2 * z1);
-			glVertex3f(r2*x1, r1*y1, r2*z1);
-			glNormal3f(r2 * x2, r1 * y2, r2 * z2);
+			glNormal3f(x2, y2, z2);
 			glVertex3f(r2*x2, r1*y2, r2*z2);
+			beta += step;
+		}
+		alfa += step;
+	}
+	glEnd();
+
+	alfa = 0; beta = 0;
+	glBegin(GL_LINES);
+	for (UINT i = 0; i < len; i++) {
+		for (UINT j = 0; j < nSeg; j++) {
+			float x1 = cos(alfa) * cos(beta);
+			float y1 = sin(alfa);
+			float z1 = cos(alfa) * sin(beta);
+			glVertex3f(0,0,0);
+			glVertex3f(x1, y1, z1);
+
+			float x2 = cos(alfa + step) * cos(beta);
+			float y2 = sin(alfa + step);
+			float z2 = cos(alfa + step) * sin(beta);
+			glVertex3f(0,0,0);
+			glVertex3f(x2, y2, z2);
 			beta += step;
 		}
 		alfa += step;
@@ -316,7 +358,7 @@ void CGLRenderer::DrawHand(SIDES side) {
 	glPushMatrix();
 	skin->Select();
 	float h = 2.4;
-	DrawSpherePart(0.4,0.4,30,0.6);
+	DrawSpherePart(0.4,0.4,10,0.6);
 	glTranslatef(side*0.33, -h/2, 0);
 	glRotatef(side * 15, 0, 0, 1);
 	DrawCylinder(0.3, 0.4, h, 30, 1);
@@ -326,12 +368,12 @@ void CGLRenderer::DrawHand(SIDES side) {
 	DrawCylinder(0.3, 0.5, h / 4, 30, 1);
 
 	glTranslatef(side * 0.1, 0.3*-h, 0);
-	DrawSpherePart(0.5, 0.4, 30, 1);
+	DrawSpherePart(0.5, 0.4, 10, 1);
 
 	
 	glTranslatef(-side*0.4, 0.2, 0);
 	glRotatef(-15*side, 0, 0, 1);
-	DrawSpherePart(0.4, 0.2, 30, 1);
+	DrawSpherePart(0.4, 0.2, 10, 1);
 	glPopMatrix();
 }
 void CGLRenderer::DrawLegs(){
@@ -365,11 +407,11 @@ void CGLRenderer::DrawShoe(SIDES side) {
 	glTranslatef(0, 0, -0.4);
 
 	black->Select();
-	DrawSpherePart(0.4, 0.4, 30, 0.55);
+	DrawSpherePart(0.4, 0.4, 15, 0.55);
 	glTranslatef(0, 0, 0.8);
 
 	black->Select();
-	DrawSpherePart(0.4, 0.4, 30, 0.55);
+	DrawSpherePart(0.4, 0.4, 15, 0.55);
 	glPopMatrix();
 }
 
@@ -378,8 +420,8 @@ void CGLRenderer::DrawBoobs() {
 	blue->Select();
 	glPushMatrix();
 	glTranslatef(-0.75, -2.5, -2.5);
-	DrawSpherePart(r, r, 30, 1);
+	DrawSpherePart(r, r, 15, 1);
 	glTranslatef(1.5, 0, 0);
-	DrawSpherePart(r, r, 30, 1);
+	DrawSpherePart(r, r, 15, 1);
 	glPopMatrix();
 }
